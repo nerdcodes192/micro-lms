@@ -86,8 +86,8 @@ enroll twice → 409; non-enrolled lesson read → 403; draft invisible (list + 
 non-owner edit → 403; double-complete → % unchanged; add lesson to in-progress course → % recalculates correctly.
 
 ## Phase 4 — Instructor dashboard endpoints (commit: "feat: instructor dashboard API")
-- [ ] `GET /api/instructor/courses` — owner's courses (draft+published) with `studentCount` and `avgCompletion` (mean of each enrollment's computed percent; 0 if no students). Use `computeProgress`; batch queries (one Lesson query, one Enrollment query — avoid N+1 per student).
-- [ ] `GET /api/instructor/courses/:id/students` (owner only, 403 otherwise) — list `{student name/email, completedCount, totalLessons, percent, enrolledAt}`.
+- [x] `GET /api/instructor/courses` — owner's courses (draft+published) with `studentCount` and `avgCompletion` (mean of each enrollment's computed percent; 0 if no students). Use `computeProgress`; batch queries (one Lesson query, one Enrollment query — avoid N+1 per student).
+- [x] `GET /api/instructor/courses/:id/students` (owner only, 403 otherwise) — list `{student name/email, completedCount, totalLessons, percent, enrolledAt}`.
 
 **Done when:** numbers match a hand calculation against seeded/curl-created data.
 

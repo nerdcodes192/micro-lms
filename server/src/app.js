@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.js';
 import courseRoutes from './routes/courses.js';
 import lessonRoutes from './routes/lessons.js';
 import enrollmentRoutes from './routes/enrollments.js';
+import instructorRoutes from './routes/instructor.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 export function createApp() {
@@ -16,6 +17,7 @@ export function createApp() {
   app.use('/api/auth', authRoutes);
   app.use('/api/courses', courseRoutes);
   app.use('/api/courses/:id/lessons', lessonRoutes);
+  app.use('/api/instructor', instructorRoutes);
   app.use('/api', enrollmentRoutes);
 
   app.use('/api', (req, res) => res.status(404).json({ error: 'Not found' }));
