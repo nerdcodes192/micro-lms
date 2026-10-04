@@ -86,6 +86,15 @@ const enrollments = [
 await mongoose.connect(config.mongoUri);
 console.log('Connected to MongoDB'); // URI deliberately not printed
 
+// Safety check: an empty database seeds freely, but wiping existing data needs --force.
+const force = process.argv.includes('--force');
+const existing = await Promise.all(models.map((model) => model.estimatedDocumentCount()));
+if (!force && existing.some((count) => count > 0)) {
+  console.error('Database already has data. Re-run with --force to wipe it: npm run seed -- --force');
+  await mongoose.disconnect();
+  process.exit(1);
+}
+
 for (const model of models) await model.deleteMany({});
 for (const model of models) await model.syncIndexes();
 

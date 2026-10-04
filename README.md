@@ -16,8 +16,10 @@ npm run install:all
 # 2. Configure the API
 cp server/.env.example server/.env    # then edit if needed
 
-# 3. Load demo data (this wipes the collections first)
+# 3. Load demo data into an empty database
 npm run seed
+#    To reset a database that already has data (wipes users, courses, lessons, enrollments):
+#    npm run seed -- --force
 
 # 4. Start API + client together
 npm run dev
