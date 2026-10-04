@@ -124,4 +124,4 @@ Minimal, clean Tailwind. `api.js` fetch wrapper adds Bearer token, surfaces `{er
 
 ## Deferred — do NOT start until core is complete and the owner says go
 - Automated tests (brief requires ≥3 rule tests — will be added later).
-- One optional feature from the brief (TBD).
+- One optional feature from the brief: chosen **Certificate generation** (done).

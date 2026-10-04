@@ -128,6 +128,7 @@ All routes are under `/api`. Auth uses an `Authorization: Bearer <token>` header
 | POST | `/courses/:id/lessons/:lessonId/complete` | Enrolled student |
 | POST | `/courses/:id/enroll` | Student (published courses only) |
 | GET | `/me/enrollments` | Student |
+| GET | `/courses/:id/certificate` | Enrolled student who has completed every lesson |
 | GET | `/instructor/courses` | Instructor |
 | GET | `/instructor/courses/:id/students` | Owning instructor |
 
@@ -145,6 +146,15 @@ Each lesson has an `order` from 1 to n that only the server sets. `PUT /reorder`
 A draft course returns 404 to anyone who isn't the owner or already enrolled, so its existence isn't revealed. An existing course you're not allowed to act on returns 403: editing another instructor's course, or reading or completing lessons without enrolling. Enrollment doesn't check for an existing record first. It inserts and relies on the unique `{student, course}` index, then maps the duplicate-key error (11000) to **409**. That stays correct even when two requests race.
 *What I gave up:* a 404 for drafts is slightly less informative for debugging, and the duplicate rule lives in the database rather than being readable in route code.
 
+## Optional feature: certificates
+
+A student who completes every lesson of a course can open a certificate at `/courses/:id/certificate` (linked from My Learning and the course page). It shows the student, course, instructor, lesson count, total minutes and the completion date.
+
+- **Endpoint:** `GET /api/courses/:id/certificate` returns `{ certificate: { studentName, courseTitle, instructorName, totalLessons, totalDuration, issuedAt } }`. Not enrolled or not at 100% → 403; instructors → 403; logged out → 401.
+- **Derived, not stored.** There is no certificates collection. The certificate is built on read from the enrollment and the course's current lessons, using the same `computeProgress` as everything else. `issuedAt` is the enrollment's `updatedAt`, i.e. when the last lesson was completed.
+  *Trade-off:* if the instructor later adds a lesson, the student drops below 100% and the certificate is unavailable until they complete it. This matches the progress rule rather than freezing an old snapshot.
+- **PDF via the browser.** The "Print / Save as PDF" button calls `window.print()`, and the navbar and buttons are hidden with Tailwind's `print:` variant. This avoids adding a PDF library.
+
 ## Assumptions
 
 - **Unpublishing after enrollment:** students who are already enrolled keep access to the course and their progress. It stays in My Learning with an "Unpublished" badge. It disappears from the catalogue, and new enrollments and non-enrolled users get a 404.
@@ -156,7 +166,7 @@ A draft course returns 404 to anyone who isn't the owner or already enrolled, so
 ## What I'd do with two more days
 
 - Write the automated tests (non-enrolled student refused lesson access, double completion leaves progress unchanged, reorder validation, draft 404s, ownership 403s, duplicate enrollment 409), with an in-memory MongoDB.
-- Add one of the brief's optional features.
+- Give certificates a verification ID and a public link so a third party can check them.
 - Enforce sequential access on the server, as a per-course setting.
 - Paginate and search the catalogue and the students view.
 - Move auth to httpOnly cookies with refresh tokens.
@@ -165,7 +175,7 @@ A draft course returns 404 to anyone who isn't the owner or already enrolled, so
 ## What's broken or unfinished
 
 - **Automated tests are not written yet.** The brief requires at least three, and they are still pending.
-- **No optional feature has been implemented yet.**
+- **Certificates can't be verified by a third party.** There is no verification ID or public link, and the certificate disappears if the instructor adds a lesson the student hasn't completed.
 - Sequential lesson order is only enforced in the UI. The API doesn't enforce it.
 - No pagination anywhere. Every list returns all of its rows.
 - The JWT is stored in `localStorage`, so an XSS bug could steal it. I chose this for simplicity over httpOnly cookies.
