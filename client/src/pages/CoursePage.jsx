@@ -49,6 +49,11 @@ export default function CoursePage() {
         )}
         <div className="mt-4">
           {progress && <ProgressBar percent={progress.percent} />}
+          {progress?.percent === 100 && (
+            <Link to={`/courses/${course._id}/certificate`} className="mt-2 inline-block text-sm underline">
+              View certificate
+            </Link>
+          )}
           {user?.role === 'student' && !enrolled && (
             <button onClick={enroll} className={button}>Enroll</button>
           )}

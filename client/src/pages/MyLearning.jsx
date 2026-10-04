@@ -57,6 +57,11 @@ export default function MyLearning() {
               {e.totalLessons ? 'Completed' : 'No lessons yet'}
             </span>
           )}
+          {e.percent === 100 && (
+            <Link to={`/courses/${e.course._id}/certificate`} className="ml-3 text-sm underline">
+              View certificate
+            </Link>
+          )}
         </div>
       ))}
     </div>

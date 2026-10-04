@@ -11,6 +11,7 @@ import MyLearning from './pages/MyLearning.jsx';
 import InstructorDashboard from './pages/InstructorDashboard.jsx';
 import CourseEditor from './pages/CourseEditor.jsx';
 import CourseStudents from './pages/CourseStudents.jsx';
+import Certificate from './pages/Certificate.jsx';
 
 function Home() {
   const { user } = useAuth();
@@ -22,7 +23,9 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <div className="min-h-screen bg-slate-50 text-slate-800">
-          <Navbar />
+          <div className="print:hidden">
+            <Navbar />
+          </div>
           <main className="mx-auto max-w-4xl px-4 py-6">
             <Routes>
               <Route path="/" element={<Home />} />
@@ -31,6 +34,7 @@ export default function App() {
               <Route path="/courses" element={<Catalogue />} />
               <Route path="/courses/:id" element={<CoursePage />} />
               <Route path="/courses/:id/lessons/:lessonId" element={<RequireRole><LessonPage /></RequireRole>} />
+              <Route path="/courses/:id/certificate" element={<RequireRole role="student"><Certificate /></RequireRole>} />
               <Route path="/my-learning" element={<RequireRole role="student"><MyLearning /></RequireRole>} />
               <Route path="/instructor" element={<RequireRole role="instructor"><InstructorDashboard /></RequireRole>} />
               <Route path="/instructor/courses/new" element={<RequireRole role="instructor"><CourseEditor /></RequireRole>} />
