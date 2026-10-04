@@ -1,62 +1,67 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Compass } from 'lucide-react';
 import { api } from '../api.js';
 import { useAuth } from '../AuthContext.jsx';
+import { usePageTitle } from '../components/PageTitle.jsx';
+import PageHeader from '../components/PageHeader.jsx';
+import CourseCard from '../components/CourseCard.jsx';
+import Card from '../components/Card.jsx';
+import Skeleton from '../components/Skeleton.jsx';
+import EmptyState from '../components/EmptyState.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
-import { button, buttonLight } from '../components/ui.js';
+
+function CourseCardSkeleton() {
+  return (
+    <Card className="space-y-3 p-5">
+      <Skeleton className="h-5 w-20" />
+      <Skeleton className="h-6 w-3/4" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-2/3" />
+      <Skeleton className="mt-6 h-4 w-1/2" />
+    </Card>
+  );
+}
 
 export default function Catalogue() {
+  usePageTitle('Discover');
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [courses, setCourses] = useState(null);
+  const [percentById, setPercentById] = useState({});
   const [error, setError] = useState('');
 
   useEffect(() => {
     api('/courses')
       .then((data) => setCourses(data.courses))
       .catch((err) => setError(err.message));
-  }, []);
-
-  async function enroll(courseId) {
-    setError('');
-    try {
-      await api(`/courses/${courseId}/enroll`, { method: 'POST' });
-      navigate(`/courses/${courseId}`);
-    } catch (err) {
-      setError(err.message); // e.g. 409 "Already enrolled"
+    // Students: join progress client-side so enrolled cards show a bar.
+    if (user?.role === 'student') {
+      api('/me/enrollments')
+        .then((data) =>
+          setPercentById(Object.fromEntries(data.enrollments.map((e) => [e.course._id, e.percent])))
+        )
+        .catch(() => {}); // cards still render without progress
     }
-  }
+  }, [user?.role]);
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-semibold">Course catalogue</h1>
+    <>
+      <PageHeader title="Discover courses" subtitle="Learn something new today." />
       <ErrorMessage error={error} />
-      {!courses && !error && <p className="text-slate-500">Loading…</p>}
-      {courses?.length === 0 && <p className="text-slate-500">No published courses yet.</p>}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {courses?.map((c) => (
-          <div key={c._id} className="flex flex-col rounded bg-white p-4 shadow">
-            <p className="text-xs uppercase text-slate-400">{c.category}</p>
-            <h2 className="text-lg font-semibold">{c.title}</h2>
-            <p className="text-sm text-slate-500">by {c.instructor.name}</p>
-            <p className="mt-2 flex-1 text-sm text-slate-700">{c.description}</p>
-            <p className="mt-2 text-sm text-slate-500">
-              {c.lessonCount} lessons · {c.totalDuration} min
-            </p>
-            <div className="mt-3 flex gap-2">
-              <Link to={`/courses/${c._id}`} className={buttonLight}>
-                Open
-              </Link>
-              {user?.role === 'student' && !c.enrolled && (
-                <button onClick={() => enroll(c._id)} className={button}>
-                  Enroll
-                </button>
-              )}
-              {c.enrolled && <span className="self-center text-sm text-emerald-600">Enrolled</span>}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+      {!courses && !error && (
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2, 3, 4, 5].map((i) => <CourseCardSkeleton key={i} />)}
+        </div>
+      )}
+      {courses?.length === 0 && (
+        <EmptyState icon={Compass} title="No courses yet" text="New courses will show up here once they're published." />
+      )}
+      {courses?.length > 0 && (
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {courses.map((c) => (
+            <CourseCard key={c._id} course={c} percent={c.enrolled ? (percentById[c._id] ?? 0) : undefined} />
+          ))}
+        </div>
+      )}
+    </>
   );
 }
