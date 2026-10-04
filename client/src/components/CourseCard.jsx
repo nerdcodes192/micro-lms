@@ -52,7 +52,7 @@ export default function CourseCard({ course, percent, to, badges, footer }) {
             <div className="space-y-3">
               <ProgressBar percent={percent} showLabel size="sm" />
               <span className="flex items-center gap-1 text-sm font-medium text-indigo-600 group-hover:text-indigo-700">
-                Continue Learning <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                {percent === 100 ? 'Review Course' : 'Continue Learning'} <ArrowRight size={15} className="transition-transform group-hover:translate-x-0.5" />
               </span>
             </div>
           ) : (
