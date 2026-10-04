@@ -1,4 +1,4 @@
-// Demo data: `npm run seed` (wipes and recreates everything; safe to re-run).
+// Demo data: `npm run seed` on an empty DB, or `npm run seed -- --force` to wipe and recreate.
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { config } from './config.js';
