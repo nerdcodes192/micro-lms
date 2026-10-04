@@ -15,6 +15,10 @@ function signToken(user) {
 router.post('/signup', async (req, res) => {
   const { name, email, password, role } = req.body;
   if (!name || !email) throw httpError(400, 'Name and email are required');
+  // Basic shape check (something@domain.tld), not full RFC validation.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim())) {
+    throw httpError(400, 'Email must be a valid address');
+  }
   if (!['instructor', 'student'].includes(role)) {
     throw httpError(400, 'Role must be instructor or student');
   }
