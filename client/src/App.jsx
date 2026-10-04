@@ -10,6 +10,7 @@ import LessonPage from './pages/LessonPage.jsx';
 import MyLearning from './pages/MyLearning.jsx';
 import InstructorDashboard from './pages/InstructorDashboard.jsx';
 import CourseEditor from './pages/CourseEditor.jsx';
+import CourseStudents from './pages/CourseStudents.jsx';
 
 function Home() {
   const { user } = useAuth();
@@ -34,6 +35,7 @@ export default function App() {
               <Route path="/instructor" element={<RequireRole role="instructor"><InstructorDashboard /></RequireRole>} />
               <Route path="/instructor/courses/new" element={<RequireRole role="instructor"><CourseEditor /></RequireRole>} />
               <Route path="/instructor/courses/:id/edit" element={<RequireRole role="instructor"><CourseEditor /></RequireRole>} />
+              <Route path="/instructor/courses/:id/students" element={<RequireRole role="instructor"><CourseStudents /></RequireRole>} />
               <Route path="*" element={<p className="text-slate-500">Page not found.</p>} />
             </Routes>
           </main>

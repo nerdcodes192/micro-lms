@@ -93,13 +93,13 @@ non-owner edit → 403; double-complete → % unchanged; add lesson to in-progre
 
 ## Phase 5 — Frontend (commit per page)
 Minimal, clean Tailwind. `api.js` fetch wrapper adds Bearer token, surfaces `{error}`. `AuthContext` stores token+user in localStorage. Route guards by role (UX only).
-- [ ] Login / Signup (role picker).
-- [ ] Student: **Catalogue** (cards: title, instructor, lessons, total minutes, Enroll / Open button) → **Course page** (ordered lesson list with ✓ marks, progress bar) → **Lesson page** (text body or video link/iframe, "Mark complete", Next/Prev). Lessons after the first incomplete one shown locked in UI.
-- [ ] Student: **My Learning** — enrolled courses, % bar, **Resume** → `nextLessonId` (or "Completed").
-- [ ] Instructor: **Dashboard** table (title, status badge, students, avg completion) + "New course".
-- [ ] Instructor: **Course editor** — edit fields, publish/unpublish toggle, add lesson form, edit/delete lesson, reorder via ↑/↓ buttons calling the reorder endpoint with the full array.
-- [ ] Instructor: **Students view** — table of enrolled students with progress.
-- [ ] Show server error messages (e.g. 409 "Already enrolled") in UI.
+- [x] Login / Signup (role picker).
+- [x] Student: **Catalogue** (cards: title, instructor, lessons, total minutes, Enroll / Open button) → **Course page** (ordered lesson list with ✓ marks, progress bar) → **Lesson page** (text body or video link/iframe, "Mark complete", Next/Prev). Lessons after the first incomplete one shown locked in UI.
+- [x] Student: **My Learning** — enrolled courses, % bar, **Resume** → `nextLessonId` (or "Completed").
+- [x] Instructor: **Dashboard** table (title, status badge, students, avg completion) + "New course".
+- [x] Instructor: **Course editor** — edit fields, publish/unpublish toggle, add lesson form, edit/delete lesson, reorder via ↑/↓ buttons calling the reorder endpoint with the full array.
+- [x] Instructor: **Students view** — table of enrolled students with progress.
+- [x] Show server error messages (e.g. 409 "Already enrolled") in UI.
 
 **Done when:** full manual flow works against seeded data in both roles.
 
