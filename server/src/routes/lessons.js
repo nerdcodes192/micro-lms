@@ -66,4 +66,24 @@ router.delete('/:lessonId', ownerOnly, async (req, res) => {
   res.status(204).end();
 });
 
+// Body: { lessonIds: [...] } — the course's full lesson list in the new order.
+router.put('/reorder', ownerOnly, async (req, res) => {
+  const course = await loadOwnedCourse(req);
+  const { lessonIds } = req.body;
+  const current = await Lesson.find({ course: course._id }).select('_id');
+  const currentIds = new Set(current.map((l) => l.id));
+
+  // Must be exactly this course's lessons: same count, no duplicates, nothing foreign.
+  const valid =
+    Array.isArray(lessonIds) &&
+    lessonIds.length === currentIds.size &&
+    new Set(lessonIds).size === lessonIds.length &&
+    lessonIds.every((id) => currentIds.has(id));
+  if (!valid) throw httpError(400, "lessonIds must list each of this course's lessons exactly once");
+
+  await writeOrder(lessonIds);
+  const lessons = await Lesson.find({ course: course._id }).sort({ order: 1 });
+  res.json({ lessons });
+});
+
 export default router;
