@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, homeFor } from '../AuthContext.jsx';
+import AuthLayout from '../components/AuthLayout.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
-import { input, button } from '../components/ui.js';
+import Button from '../components/Button.jsx';
+import { Field, Input } from '../components/Field.jsx';
 
 export default function Login() {
   const { login } = useAuth();
@@ -26,17 +28,32 @@ export default function Login() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto mt-10 max-w-sm space-y-4 rounded bg-white p-6 shadow">
-      <h1 className="text-xl font-semibold">Log in</h1>
-      <ErrorMessage error={error} />
-      <input className={input} type="email" placeholder="Email" required
-        value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input className={input} type="password" placeholder="Password" required
-        value={password} onChange={(e) => setPassword(e.target.value)} />
-      <button className={`${button} w-full`} disabled={busy}>Log in</button>
-      <p className="text-sm text-slate-600">
-        No account? <Link to="/signup" className="underline">Sign up</Link>
-      </p>
-    </form>
+    <AuthLayout
+      title="Welcome back"
+      subtitle="Log in to continue learning."
+      footer={
+        <>
+          Don&apos;t have an account?{' '}
+          <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-700">
+            Sign up
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <ErrorMessage error={error} />
+        <Field label="Email" htmlFor="email">
+          <Input id="email" type="email" autoComplete="email" placeholder="you@example.com" required
+            value={email} onChange={(e) => setEmail(e.target.value)} />
+        </Field>
+        <Field label="Password" htmlFor="password">
+          <Input id="password" type="password" autoComplete="current-password" placeholder="••••••••" required
+            value={password} onChange={(e) => setPassword(e.target.value)} />
+        </Field>
+        <Button type="submit" className="w-full" loading={busy}>
+          Log in
+        </Button>
+      </form>
+    </AuthLayout>
   );
 }
