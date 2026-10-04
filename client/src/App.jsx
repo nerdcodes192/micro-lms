@@ -8,6 +8,7 @@ import Catalogue from './pages/Catalogue.jsx';
 import CoursePage from './pages/CoursePage.jsx';
 import LessonPage from './pages/LessonPage.jsx';
 import MyLearning from './pages/MyLearning.jsx';
+import InstructorDashboard from './pages/InstructorDashboard.jsx';
 
 function Home() {
   const { user } = useAuth();
@@ -29,6 +30,7 @@ export default function App() {
               <Route path="/courses/:id" element={<CoursePage />} />
               <Route path="/courses/:id/lessons/:lessonId" element={<RequireRole><LessonPage /></RequireRole>} />
               <Route path="/my-learning" element={<RequireRole role="student"><MyLearning /></RequireRole>} />
+              <Route path="/instructor" element={<RequireRole role="instructor"><InstructorDashboard /></RequireRole>} />
               <Route path="*" element={<p className="text-slate-500">Page not found.</p>} />
             </Routes>
           </main>
