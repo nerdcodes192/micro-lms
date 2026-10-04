@@ -64,9 +64,9 @@ micro-lms/ (repo root = this folder)
 Ownership helper: `loadOwnedCourse(req)` → 404 if missing, 403 if `course.instructor != req.user.id`. Use it in EVERY instructor mutation.
 - [x] `POST /api/courses` (instructor) — create, status defaults `draft`.
 - [x] `PATCH /api/courses/:id` (owner) — title/description/category/status.
-- [ ] `POST /api/courses/:id/lessons` (owner) — `order = (max existing order) + 1`.
-- [ ] `PATCH /api/courses/:id/lessons/:lessonId` (owner) — edit fields (not order); lesson must belong to that course.
-- [ ] `DELETE /api/courses/:id/lessons/:lessonId` (owner) — then renumber remaining orders 1..n. (Progress stays correct because % is computed against current lessons.)
+- [x] `POST /api/courses/:id/lessons` (owner) — `order = (max existing order) + 1`.
+- [x] `PATCH /api/courses/:id/lessons/:lessonId` (owner) — edit fields (not order); lesson must belong to that course.
+- [x] `DELETE /api/courses/:id/lessons/:lessonId` (owner) — then renumber remaining orders 1..n. (Progress stays correct because % is computed against current lessons.)
 - [ ] `PUT /api/courses/:id/lessons/reorder {lessonIds:[...]}` (owner) — 400 unless the array is exactly the set of this course's lesson IDs (same length, no dupes, no foreign IDs); then `bulkWrite` order = index+1.
 
 **Done when:** via curl, a non-owner instructor gets 403 on every route above; reorder rejects partial/foreign lists.
