@@ -47,16 +47,16 @@ micro-lms/ (repo root = this folder)
 **Done when:** `npm run dev` serves the Vite page and `/api/health` responds.
 
 ## Phase 1 — Models + Auth (commit: "feat: user model and JWT auth")
-- [ ] Models (Mongoose, timestamps on):
+- [x] Models (Mongoose, timestamps on):
   - `User { name, email (unique, lowercase), passwordHash, role: enum['instructor','student'] }` — `toJSON` strips passwordHash.
   - `Course { title, description, category, status: enum['draft','published'] default 'draft', instructor: ObjectId→User }`
   - `Lesson { course: ObjectId→Course, title, contentType: enum['text','video'], body (text or URL), durationMinutes (int ≥1), order (int) }` index `{course:1, order:1}`.
   - `Enrollment { student→User, course→Course, completedLessons: [ObjectId→Lesson] }` **unique index `{student:1, course:1}`**. Call `Enrollment.syncIndexes()` on startup so the unique index exists.
-- [ ] `POST /api/auth/signup {name,email,password,role}` → validate (role one of two, password ≥6), bcrypt hash, return `{token, user}`. Duplicate email → 409.
-- [ ] `POST /api/auth/login` → `{token, user}`; bad creds → 401 (same message for unknown email / wrong password).
-- [ ] `GET /api/auth/me`.
-- [ ] `middleware/auth.js`: `requireAuth` (Bearer JWT → `req.user = {id, role}`), `optionalAuth`, `requireRole(...roles)` → 403.
-- [ ] Central `errorHandler`: ValidationError → 400, CastError (bad ObjectId) → 404, duplicate key 11000 → 409.
+- [x] `POST /api/auth/signup {name,email,password,role}` → validate (role one of two, password ≥6), bcrypt hash, return `{token, user}`. Duplicate email → 409.
+- [x] `POST /api/auth/login` → `{token, user}`; bad creds → 401 (same message for unknown email / wrong password).
+- [x] `GET /api/auth/me`.
+- [x] `middleware/auth.js`: `requireAuth` (Bearer JWT → `req.user = {id, role}`), `optionalAuth`, `requireRole(...roles)` → 403.
+- [x] Central `errorHandler`: ValidationError → 400, CastError (bad ObjectId) → 404, duplicate key 11000 → 409.
 
 **Done when:** signup/login/me work via curl; wrong role → 403.
 
