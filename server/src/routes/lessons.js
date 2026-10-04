@@ -97,16 +97,20 @@ router.get('/:lessonId', requireAuth, async (req, res) => {
 });
 
 // Mark complete. $addToSet makes it idempotent: completing twice changes nothing.
+// Skipping the write when already done also keeps updatedAt (the certificate date) stable.
 router.post('/:lessonId/complete', requireAuth, requireRole('student'), async (req, res) => {
   const { course, enrollment } = await loadVisibleCourse(req);
   if (!enrollment) throw httpError(403, 'Enroll in this course first');
   const lesson = await findLessonInCourse(course._id, req.params.lessonId);
 
-  const updated = await Enrollment.findByIdAndUpdate(
-    enrollment._id,
-    { $addToSet: { completedLessons: lesson._id } },
-    { returnDocument: 'after' }
-  );
+  const alreadyDone = enrollment.completedLessons.some((id) => id.equals(lesson._id));
+  const updated = alreadyDone
+    ? enrollment
+    : await Enrollment.findByIdAndUpdate(
+        enrollment._id,
+        { $addToSet: { completedLessons: lesson._id } },
+        { returnDocument: 'after' }
+      );
   const lessonIds = (await lessonIdsByCourse([course._id])).get(String(course._id));
   res.json({
     progress: { ...computeProgress(updated, lessonIds), completedLessons: updated.completedLessons },

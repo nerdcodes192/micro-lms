@@ -70,8 +70,8 @@ router.get('/courses/:id/certificate', studentOnly, async (req, res) => {
       totalLessons,
       totalDuration: lessons.reduce((sum, l) => sum + l.durationMinutes, 0),
       // The enrollment's last change is completing the final lesson, so updatedAt
-      // is when the course was finished. (Approximate: re-marking an already
-      // completed lesson also bumps updatedAt.)
+      // is when the course was finished (re-marking a completed lesson skips the
+      // write, so it doesn't bump updatedAt).
       issuedAt: enrollment.updatedAt,
     },
   });
