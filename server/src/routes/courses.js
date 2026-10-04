@@ -19,9 +19,11 @@ function pickCourseFields(body) {
 
 // Catalogue: published courses only, with lesson count and total minutes.
 router.get('/', optionalAuth, async (req, res) => {
-  const courses = await Course.find({ status: 'published' })
+  const found = await Course.find({ status: 'published' })
     .populate('instructor', 'name')
     .sort({ createdAt: -1 });
+  // Skip orphaned courses whose instructor account no longer exists (unclean data).
+  const courses = found.filter((c) => c.instructor);
   const courseIds = courses.map((c) => c._id);
 
   const stats = await Lesson.aggregate([

@@ -14,6 +14,12 @@ export async function api(path, { method = 'GET', body } = {}) {
 
   if (res.status === 204) return null;
   const data = await res.json().catch(() => ({}));
+  // A stored token the server rejects (expired, or its account is gone): log out.
+  if (res.status === 401 && token && path !== '/auth/login') {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.assign('/login');
+  }
   if (!res.ok) {
     const err = new Error(data.error || `Request failed (${res.status})`);
     err.status = res.status;
