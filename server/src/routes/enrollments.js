@@ -2,7 +2,9 @@ import { Router } from 'express';
 import { Course } from '../models/Course.js';
 import { Enrollment } from '../models/Enrollment.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
+import { Lesson } from '../models/Lesson.js';
 import { computeProgress, lessonIdsByCourse } from '../services/progress.js';
+import { loadVisibleCourse } from '../services/ownership.js';
 import { httpError } from '../httpError.js';
 
 // Mounted at /api.
@@ -43,6 +45,35 @@ router.get('/me/enrollments', studentOnly, async (req, res) => {
       enrolledAt: e.createdAt,
       ...computeProgress(e, lessonIds.get(String(e.course._id))),
     })),
+  });
+});
+
+// Certificate: derived on read, never stored (same idea as progress).
+// Trade-off: if the instructor later adds a lesson, the student drops below 100%
+// and the certificate is unavailable until they complete it.
+router.get('/courses/:id/certificate', studentOnly, async (req, res) => {
+  // loadVisibleCourse keeps courses unpublished after enrollment readable.
+  const { course, enrollment } = await loadVisibleCourse(req);
+  if (!enrollment) throw httpError(403, 'Not enrolled in this course');
+
+  const lessons = await Lesson.find({ course: course._id }).sort({ order: 1 }).select('durationMinutes');
+  const { percent, totalLessons } = computeProgress(enrollment, lessons.map((l) => l._id));
+  if (totalLessons === 0 || percent < 100) throw httpError(403, 'Course not completed yet');
+
+  await course.populate('instructor', 'name');
+  await enrollment.populate('student', 'name');
+  res.json({
+    certificate: {
+      studentName: enrollment.student.name,
+      courseTitle: course.title,
+      instructorName: course.instructor.name,
+      totalLessons,
+      totalDuration: lessons.reduce((sum, l) => sum + l.durationMinutes, 0),
+      // The enrollment's last change is completing the final lesson, so updatedAt
+      // is when the course was finished. (Approximate: re-marking an already
+      // completed lesson also bumps updatedAt.)
+      issuedAt: enrollment.updatedAt,
+    },
   });
 });
 
