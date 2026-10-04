@@ -62,8 +62,8 @@ micro-lms/ (repo root = this folder)
 
 ## Phase 2 — Courses & Lessons (instructor) (commit per bullet group)
 Ownership helper: `loadOwnedCourse(req)` → 404 if missing, 403 if `course.instructor != req.user.id`. Use it in EVERY instructor mutation.
-- [ ] `POST /api/courses` (instructor) — create, status defaults `draft`.
-- [ ] `PATCH /api/courses/:id` (owner) — title/description/category/status.
+- [x] `POST /api/courses` (instructor) — create, status defaults `draft`.
+- [x] `PATCH /api/courses/:id` (owner) — title/description/category/status.
 - [ ] `POST /api/courses/:id/lessons` (owner) — `order = (max existing order) + 1`.
 - [ ] `PATCH /api/courses/:id/lessons/:lessonId` (owner) — edit fields (not order); lesson must belong to that course.
 - [ ] `DELETE /api/courses/:id/lessons/:lessonId` (owner) — then renumber remaining orders 1..n. (Progress stays correct because % is computed against current lessons.)
