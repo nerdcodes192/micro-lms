@@ -1,8 +1,13 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo.jsx';
 
 // Split auth screen: brand panel on lg+, centered form card on the right.
 export default function AuthLayout({ title, subtitle, footer, children }) {
+  useEffect(() => {
+    document.title = `${title} · Learnly`;
+  }, [title]);
+
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <aside className="relative hidden overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-700 p-12 text-white lg:flex lg:flex-col">

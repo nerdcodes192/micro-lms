@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext.jsx';
 import Avatar from './Avatar.jsx';
@@ -10,6 +11,10 @@ export default function TopNav() {
   const { user } = useAuth();
   const { pathname } = useLocation();
   const title = useCurrentPageTitle(defaultTitle(user, pathname));
+
+  useEffect(() => {
+    document.title = title === 'Learnly' ? 'Learnly' : `${title} · Learnly`;
+  }, [title]);
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-zinc-200 bg-white/80 px-4 backdrop-blur sm:px-6 lg:px-10">

@@ -10,14 +10,13 @@ export function PageTitleProvider({ children }) {
   return <PageTitleContext.Provider value={{ entry, setEntry }}>{children}</PageTitleContext.Provider>;
 }
 
-// Call from a page: usePageTitle('Discover'). Also sets document.title.
+// Call from a page: usePageTitle('Discover'). TopNav shows it and mirrors it into document.title.
 export function usePageTitle(title) {
   const ctx = useContext(PageTitleContext);
   const { pathname } = useLocation();
   const setEntry = ctx?.setEntry;
   useEffect(() => {
     if (!title) return;
-    document.title = `${title} · Learnly`;
     setEntry?.({ path: pathname, title });
   }, [title, pathname, setEntry]);
 }
