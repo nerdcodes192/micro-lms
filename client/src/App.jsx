@@ -1,50 +1,75 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import { AuthProvider, useAuth, homeFor } from './AuthContext.jsx';
-import Navbar from './components/Navbar.jsx';
+import { FileQuestion } from 'lucide-react';
+import { AuthProvider, useAuth } from './AuthContext.jsx';
+import { ToastProvider } from './components/Toast.jsx';
+import AppShell from './components/AppShell.jsx';
 import RequireRole from './components/RequireRole.jsx';
+import EmptyState from './components/EmptyState.jsx';
+import Button from './components/Button.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import Catalogue from './pages/Catalogue.jsx';
 import CoursePage from './pages/CoursePage.jsx';
 import LessonPage from './pages/LessonPage.jsx';
 import MyLearning from './pages/MyLearning.jsx';
+import Progress from './pages/Progress.jsx';
+import Settings from './pages/Settings.jsx';
 import InstructorDashboard from './pages/InstructorDashboard.jsx';
+import InstructorCourses from './pages/InstructorCourses.jsx';
+import InstructorStudents from './pages/InstructorStudents.jsx';
 import CourseEditor from './pages/CourseEditor.jsx';
 import CourseStudents from './pages/CourseStudents.jsx';
 import Certificate from './pages/Certificate.jsx';
 
+// "/" is Discover for students and guests; instructors land on their dashboard.
 function Home() {
   const { user } = useAuth();
-  return <Navigate to={user ? homeFor(user) : '/courses'} replace />;
+  return user?.role === 'instructor' ? <Navigate to="/instructor" replace /> : <Catalogue />;
 }
+
+function NotFound() {
+  return (
+    <EmptyState
+      icon={FileQuestion}
+      title="Page not found"
+      text="The page you're looking for doesn't exist."
+      action={<Button to="/">Go home</Button>}
+    />
+  );
+}
+
+const instructorOnly = (page) => <RequireRole role="instructor">{page}</RequireRole>;
+const studentOnly = (page) => <RequireRole role="student">{page}</RequireRole>;
 
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <div className="min-h-screen bg-slate-50 text-slate-800">
-          <div className="print:hidden">
-            <Navbar />
-          </div>
-          <main className="mx-auto max-w-4xl px-4 py-6">
-            <Routes>
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
+            <Route element={<AppShell />}>
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
               <Route path="/courses" element={<Catalogue />} />
               <Route path="/courses/:id" element={<CoursePage />} />
               <Route path="/courses/:id/lessons/:lessonId" element={<RequireRole><LessonPage /></RequireRole>} />
-              <Route path="/courses/:id/certificate" element={<RequireRole role="student"><Certificate /></RequireRole>} />
-              <Route path="/my-learning" element={<RequireRole role="student"><MyLearning /></RequireRole>} />
-              <Route path="/instructor" element={<RequireRole role="instructor"><InstructorDashboard /></RequireRole>} />
-              <Route path="/instructor/courses/new" element={<RequireRole role="instructor"><CourseEditor /></RequireRole>} />
-              <Route path="/instructor/courses/:id/edit" element={<RequireRole role="instructor"><CourseEditor /></RequireRole>} />
-              <Route path="/instructor/courses/:id/students" element={<RequireRole role="instructor"><CourseStudents /></RequireRole>} />
-              <Route path="*" element={<p className="text-slate-500">Page not found.</p>} />
-            </Routes>
-          </main>
-        </div>
-      </BrowserRouter>
+              <Route path="/courses/:id/certificate" element={studentOnly(<Certificate />)} />
+              <Route path="/my-learning" element={studentOnly(<MyLearning />)} />
+              <Route path="/progress" element={studentOnly(<Progress />)} />
+              <Route path="/settings" element={<RequireRole><Settings /></RequireRole>} />
+              <Route path="/instructor" element={instructorOnly(<InstructorDashboard />)} />
+              <Route path="/instructor/courses" element={instructorOnly(<InstructorCourses />)} />
+              <Route path="/instructor/courses/new" element={instructorOnly(<CourseEditor />)} />
+              <Route path="/instructor/courses/:id/edit" element={instructorOnly(<CourseEditor />)} />
+              <Route path="/instructor/courses/:id/students" element={instructorOnly(<CourseStudents />)} />
+              <Route path="/instructor/students" element={instructorOnly(<InstructorStudents />)} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }

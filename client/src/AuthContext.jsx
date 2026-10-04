@@ -47,5 +47,5 @@ export function useAuth() {
 
 // Where each role lands after login/signup.
 export function homeFor(user) {
-  return user?.role === 'instructor' ? '/instructor' : '/courses';
+  return user?.role === 'instructor' ? '/instructor' : '/';
 }
