@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import { Lesson } from '../models/Lesson.js';
+import { Enrollment } from '../models/Enrollment.js';
 import { requireAuth, requireRole } from '../middleware/auth.js';
-import { loadOwnedCourse } from '../services/ownership.js';
+import { loadOwnedCourse, loadVisibleCourse } from '../services/ownership.js';
+import { computeProgress, lessonIdsByCourse } from '../services/progress.js';
 import { httpError } from '../httpError.js';
 
 // Mounted at /api/courses/:id/lessons, so req.params.id is the course id.
@@ -84,6 +86,31 @@ router.put('/reorder', ownerOnly, async (req, res) => {
   await writeOrder(lessonIds);
   const lessons = await Lesson.find({ course: course._id }).sort({ order: 1 });
   res.json({ lessons });
+});
+
+// Read a lesson body: only the owning instructor or an enrolled student.
+router.get('/:lessonId', requireAuth, async (req, res) => {
+  const { course, isOwner, enrollment } = await loadVisibleCourse(req); // 404 for hidden drafts
+  if (!isOwner && !enrollment) throw httpError(403, 'Enroll in this course to read its lessons');
+  const lesson = await findLessonInCourse(course._id, req.params.lessonId);
+  res.json({ lesson });
+});
+
+// Mark complete. $addToSet makes it idempotent: completing twice changes nothing.
+router.post('/:lessonId/complete', requireAuth, requireRole('student'), async (req, res) => {
+  const { course, enrollment } = await loadVisibleCourse(req);
+  if (!enrollment) throw httpError(403, 'Enroll in this course first');
+  const lesson = await findLessonInCourse(course._id, req.params.lessonId);
+
+  const updated = await Enrollment.findByIdAndUpdate(
+    enrollment._id,
+    { $addToSet: { completedLessons: lesson._id } },
+    { returnDocument: 'after' }
+  );
+  const lessonIds = (await lessonIdsByCourse([course._id])).get(String(course._id));
+  res.json({
+    progress: { ...computeProgress(updated, lessonIds), completedLessons: updated.completedLessons },
+  });
 });
 
 export default router;

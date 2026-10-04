@@ -72,14 +72,14 @@ Ownership helper: `loadOwnedCourse(req)` → 404 if missing, 403 if `course.inst
 **Done when:** via curl, a non-owner instructor gets 403 on every route above; reorder rejects partial/foreign lists.
 
 ## Phase 3 — Catalogue, Enrollment, Progress (the core rules) (commit: "feat: enrollment and progress")
-- [ ] `services/progress.js`:
+- [x] `services/progress.js`:
   - `computeProgress(enrollment, lessonIdsInOrder)` → `{ completedCount, totalLessons, percent, nextLessonId }` where `completedCount = |completedLessons ∩ current lessons|`, `percent = total ? round(completed/total*100) : 0`, `nextLessonId` = first lesson in order not completed (null if done). **Single source of truth — used by student and instructor endpoints.**
-- [ ] `GET /api/courses` — **published only**; each item: title, description, category, instructor name, `lessonCount`, `totalDuration` (aggregate on Lesson). If requester is a student, include `enrolled: bool`.
-- [ ] `GET /api/courses/:id` — published → summary + lesson titles/durations/order (no bodies). Draft → 404 unless requester is the owner.
-- [ ] `POST /api/courses/:id/enroll` (student) — course must be published (else 404). Duplicate → **409** (rely on the unique index catching 11000 — handles races — not just a pre-check).
-- [ ] `GET /api/courses/:id/lessons/:lessonId` — returns body. Allowed if owner instructor OR enrolled student; non-enrolled student → **403**; draft course for student → 404; lesson not in that course → 404.
-- [ ] `POST /api/courses/:id/lessons/:lessonId/complete` (enrolled student) — verify lesson belongs to course; `$addToSet` lessonId; return fresh progress. Idempotent.
-- [ ] `GET /api/me/enrollments` (student) — each enrolled course with `percent`, `completedCount`, `totalLessons`, `nextLessonId` (Resume target). Decide + document behaviour for courses unpublished after enrollment.
+- [x] `GET /api/courses` — **published only**; each item: title, description, category, instructor name, `lessonCount`, `totalDuration` (aggregate on Lesson). If requester is a student, include `enrolled: bool`.
+- [x] `GET /api/courses/:id` — published → summary + lesson titles/durations/order (no bodies). Draft → 404 unless requester is the owner.
+- [x] `POST /api/courses/:id/enroll` (student) — course must be published (else 404). Duplicate → **409** (rely on the unique index catching 11000 — handles races — not just a pre-check).
+- [x] `GET /api/courses/:id/lessons/:lessonId` — returns body. Allowed if owner instructor OR enrolled student; non-enrolled student → **403**; draft course for student → 404; lesson not in that course → 404.
+- [x] `POST /api/courses/:id/lessons/:lessonId/complete` (enrolled student) — verify lesson belongs to course; `$addToSet` lessonId; return fresh progress. Idempotent.
+- [x] `GET /api/me/enrollments` (student) — each enrolled course with `percent`, `completedCount`, `totalLessons`, `nextLessonId` (Resume target). Decide + document behaviour for courses unpublished after enrollment.
 
 **Done when:** a manual curl walkthrough shows every rule in brief §4 holding:
 enroll twice → 409; non-enrolled lesson read → 403; draft invisible (list + GET + enroll → 404);
