@@ -1,1 +1,43 @@
+@import "@fontsource-variable/inter";
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    @apply bg-zinc-50 text-zinc-900 antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  body {
+    @apply min-h-screen bg-zinc-50;
+  }
+  ::selection {
+    @apply bg-indigo-100 text-indigo-900;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-indigo-500;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@media print {
+  html,
+  body {
+    background: white;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.toast-in {
+  animation: toast-in 200ms ease-out;
+}
