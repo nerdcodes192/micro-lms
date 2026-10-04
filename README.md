@@ -170,7 +170,9 @@ A draft course returns 404 to anyone who isn't the owner or already enrolled, so
 - No pagination anywhere. Every list returns all of its rows.
 - The JWT is stored in `localStorage`, so an XSS bug could steal it. I chose this for simplicity over httpOnly cookies.
 - No refresh tokens. Tokens last 7 days and then you have to log in again.
-<!-- frontend gaps: to be filled -->
+- Deleting a lesson asks for confirmation with the browser's built-in `window.confirm` dialog, which is crude.
+- The client's `npm run lint` (oxlint, from the Vite template) crashes under Node 22.2. The tool fails before it checks any code. The build is fine.
+- Errors are shown inline as text. There are no toasts and no retry.
 
 ## Walkthrough: keeping progress correct when lessons change
 

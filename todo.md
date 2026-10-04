@@ -104,8 +104,8 @@ Minimal, clean Tailwind. `api.js` fetch wrapper adds Bearer token, surfaces `{er
 **Done when:** full manual flow works against seeded data in both roles.
 
 ## Phase 6 — Seed + README (commits: "chore: seed script", "docs: README")
-- [ ] `server/src/seed.js` (`npm run seed`): wipe collections; create **2 instructors, 5 students, 3 courses** (e.g. 2 published + 1 draft, or 3 published + an extra draft), 3–6 lessons each with mixed text/video, **partial enrollments** at varied % (incl. 0% and 100%). All passwords `password123`; print a login table at the end.
-- [ ] `README.md`:
+- [x] `server/src/seed.js` (`npm run seed`): wipe collections; create **2 instructors, 5 students, 3 courses** (e.g. 2 published + 1 draft, or 3 published + an extra draft), 3–6 lessons each with mixed text/video, **partial enrollments** at varied % (incl. 0% and 100%). All passwords `password123`; print a login table at the end.
+- [x] `README.md`:
   - Setup (Node ≥18, Mongo local or Atlas, `.env` vars, `npm install` in root/server/client, `npm run seed`, `npm run dev`) — target <5 minutes.
   - Data model sketch (4 collections, fields, relations, indexes) — mermaid ER diagram ok.
   - **Decisions & trade-offs**: (1) progress as completed-ID set computed on read (always correct when lessons change; cost = computation per request); (2) integer order + full-array reorder (simple, validated; cost = rewrites n docs per reorder); (3) 404 for drafts vs 403 for ownership; sequential order enforced in UI only.
@@ -117,10 +117,10 @@ Minimal, clean Tailwind. `api.js` fetch wrapper adds Bearer token, surfaces `{er
 **Done when:** fresh clone → README steps → running app + seeded data in under 5 minutes.
 
 ## Final checklist (core)
-- [ ] Every §4 rule has a server-side check (verified manually).
-- [ ] No progress % stored anywhere in DB.
-- [ ] `.env` not committed; `.env.example` is.
-- [ ] Git history shows incremental commits per phase.
+- [x] Every §4 rule has a server-side check (verified manually).
+- [x] No progress % stored anywhere in DB.
+- [x] `.env` not committed; `.env.example` is.
+- [x] Git history shows incremental commits per phase.
 
 ## Deferred — do NOT start until core is complete and the owner says go
 - Automated tests (brief requires ≥3 rule tests — will be added later).
