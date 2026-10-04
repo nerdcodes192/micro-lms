@@ -95,7 +95,7 @@ export default function CoursePage() {
         </div>
       </div>
 
-      <div className="grid items-start gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
         <section className="lg:col-span-2">
           <h2 className="mb-3 text-lg font-semibold tracking-tight text-zinc-900">Course content</h2>
           <Card className="p-2">

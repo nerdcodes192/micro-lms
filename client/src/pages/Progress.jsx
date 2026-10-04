@@ -99,7 +99,7 @@ export default function Progress() {
                       to={`/courses/${e.course._id}/lessons/${e.nextLessonId}`}
                       className="text-sm font-medium text-zinc-600 hover:text-zinc-900"
                     >
-                      Resume →
+                      {e.percent > 0 ? 'Resume' : 'Start'} →
                     </Link>
                   ) : null}
                 </div>
