@@ -2,6 +2,8 @@
 
 A small learning management system. Instructors create courses made of ordered lessons; students enroll, work through lessons and track their progress.
 
+**Live demo:** https://assignmentmicrolms.vercel.app/ (log in with the [seeded accounts](#seeded-accounts) below). It runs on Vercel, with the client as static files and the API as a serverless function, backed by MongoDB Atlas.
+
 - **server/**: Express 5 + Mongoose 9 REST API, JWT auth (bcryptjs for password hashing)
 - **client/**: Vite 6 + React 19 + React Router 7 + Tailwind CSS 4
 
