@@ -10,14 +10,14 @@ Tick boxes `[x]` as you finish. Do not start Phase N+1 until Phase N's "Done whe
 - **Every rule in brief §4 is enforced on the server.** UI hiding is a bonus, never the enforcement.
 - Never store a progress percentage. Store completed lesson IDs; compute % on read (see Phase 3).
 - Consistent error shape: `{ error: "message" }` with correct status (400/401/403/404/409).
-- **Out of scope for now:** automated tests and all optional features from the brief. Do NOT add them —
-  they will be scheduled after the core is complete. Verify each phase manually (curl / browser).
+- Automated tests and the optional feature were deferred until the core was complete (both now done).
+  Each phase was verified manually (curl / browser).
 - Don't add anything outside the brief's core requirements.
 
 ## Target structure
 ```
 micro-lms/ (repo root = this folder)
-├─ package.json            # root scripts: dev, seed (delegate to server/client)
+├─ package.json            # root scripts: dev, seed, test (delegate to server/client)
 ├─ README.md
 ├─ server/
 │  ├─ package.json
@@ -111,7 +111,7 @@ Minimal, clean Tailwind. `api.js` fetch wrapper adds Bearer token, surfaces `{er
   - **Decisions & trade-offs**: (1) progress as completed-ID set computed on read (always correct when lessons change; cost = computation per request); (2) integer order + full-array reorder (simple, validated; cost = rewrites n docs per reorder); (3) 404 for drafts vs 403 for ownership; sequential order enforced in UI only.
   - Assumptions made (unpublished-after-enrollment behaviour, sequential access, etc.).
   - What I'd do with two more days.
-  - **What's broken or unfinished** — honest list (note tests + optional feature pending until added).
+  - **What's broken or unfinished** — honest list (updated once tests + optional feature landed).
   - **Tricky part walkthrough**: progress staying correct when lessons are added/removed + idempotent completion.
 
 **Done when:** fresh clone → README steps → running app + seeded data in under 5 minutes.
@@ -123,5 +123,6 @@ Minimal, clean Tailwind. `api.js` fetch wrapper adds Bearer token, surfaces `{er
 - [x] Git history shows incremental commits per phase.
 
 ## Deferred — do NOT start until core is complete and the owner says go
-- Automated tests (brief requires ≥3 rule tests — will be added later).
-- One optional feature from the brief: chosen **Certificate generation** (done).
+- [x] Automated tests (brief requires ≥3 rule tests): 6 integration tests in `server/test/rules.test.js`, one per §4 rule
+  (node:test + supertest + mongodb-memory-server). Run with `npm test` from the root or `server/`.
+- [x] One optional feature from the brief: chosen **Certificate generation** (done).

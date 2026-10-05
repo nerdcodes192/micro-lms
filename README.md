@@ -36,6 +36,23 @@ Then open **http://localhost:5173**. The API runs on http://localhost:5000 (`GET
 | `PORT` | `5000` | Port the API listens on. |
 | `CLIENT_ORIGIN` | `http://localhost:5173` | Frontend origin allowed by CORS. |
 
+### Running the tests
+
+```bash
+npm test
+```
+
+There are 6 integration tests in `server/test/rules.test.js`, one for each rule in the brief's "Rules that must actually hold" section. They use Node's built-in test runner with `supertest`, calling the real API against an in-memory MongoDB (`mongodb-memory-server`). They need no `.env` and never touch your real database. The first run downloads a MongoDB binary once (about 600 MB, cached afterwards); after that the suite takes around 5 seconds.
+
+| Rule | What the test checks |
+|---|---|
+| No double enrollment | A second enroll returns 409. Two simultaneous requests give one 201 and one 409, and only one enrollment is stored. |
+| No lessons without enrollment | Reading a lesson returns 403 without its body, and completing it returns 403. After enrolling, the lesson opens. |
+| Drafts are invisible to students | A draft is missing from the catalogue, and opening it, reading its lessons or enrolling all return 404. The owner can still open it. |
+| Only the owner manages a course | Another instructor gets 403 for edit, add lesson and student list, and the course is unchanged. |
+| Completing twice doesn't inflate progress | Both calls return identical progress (25%), and the lesson is stored once. |
+| Adding a lesson keeps progress correct | A student at 100% drops to 67% (2 of 3) after a new lesson, Resume points at it, and the instructor's student list agrees. |
+
 ### Seeded accounts
 
 Every account uses the password **`password123`**.
@@ -167,7 +184,7 @@ A student who completes every lesson of a course can open a certificate at `/cou
 
 ## What I'd do with two more days
 
-- Write the automated tests (non-enrolled student refused lesson access, double completion leaves progress unchanged, reorder validation, draft 404s, ownership 403s, duplicate enrollment 409), with an in-memory MongoDB.
+- Extend the tests beyond the core rules: reorder validation, lesson deletion, unpublishing after enrollment, certificates, and the client.
 - Give certificates a verification ID and a public link so a third party can check them.
 - Enforce sequential access on the server, as a per-course setting.
 - Paginate and search the catalogue and the students view.
@@ -176,7 +193,7 @@ A student who completes every lesson of a course can open a certificate at `/cou
 
 ## What's broken or unfinished
 
-- **Automated tests are not written yet.** The brief requires at least three, and they are still pending.
+- Tests cover the server's core rules only. Reorder validation, certificates and the React client have no automated tests.
 - **Certificates can't be verified by a third party.** There is no verification ID or public link, and the certificate disappears if the instructor adds a lesson the student hasn't completed.
 - Sequential lesson order is only enforced in the UI. The API doesn't enforce it.
 - No pagination anywhere. Every list returns all of its rows.
